@@ -1,0 +1,94 @@
+.child_node circle{
+    fill: pink;
+    r: 10; 
+    z-index: 2;
+}
+
+.child_node text{
+    font-size: 13px; 
+    cursor: pointer;
+}
+
+.hover_group line{
+    stroke: black; 
+}
+
+.hover_node circle{
+    fill: blue;
+    r:20;
+    z-index: 2;
+
+}
+
+.hover_node text{
+    cursor: default;
+}
+
+.microsoft_node text{
+    font-size: 20px;
+    z-index: 1;
+}
+
+.microsoft_node circle{
+    fill: none; 
+    stroke: black;
+    r: 100; 
+}
+.hovertext_2{
+    fill: blue; 
+
+}
+.side_panel {
+    border: 1px;
+    stroke-width: 1px;
+    stroke: black;
+    float: right;
+    padding: 2rem;
+    width: 30%;
+    height: 100%;
+}
+.acquired_node circle{
+    fill: black; 
+    r: 2; 
+}
+
+.microsoft_disp{
+    justify-items: right;
+}
+.microsoft_disp p{
+    text-align: right;
+}
+
+.company_disp{
+    justify-items: right;
+    justify-content: right;
+}
+
+.main_body{
+    padding: 1rem;
+    height: 100%;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.svg_body {
+    width: 65%;
+    height: 70%;
+    float: left;
+}
+
+.graph_svg {
+    width: 100%;
+    float: bottom;
+    cursor: pointer; 
+    float: bottom; 
+}
+.bottom_panel{
+    position: absolute; 
+    bottom: 2rem;
+    width: 95%;
+}
+
+.x_axis {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+}

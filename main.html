@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./dataProcessing.js"></script>>
+
+</head>
+<body>
+    <div class="main_body" id="main_body">
+        <svg id="svg" class="svg_body"></svg>
+        <div id="side_panel" class="side_panel">
+            <div class="microsoft_disp">
+                <h1>Microsoft Acquisitions</h1>
+                <p>Microsoft has acquired over 200 companies in its 50 year history. Click and drag on the timeline below to view this process. Hover over each node for more details about each company.</p>
+                <p>All acquisition data was sourced from <a href="https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Microsoft">this Wikipedia page.</a></p>
+                <h1 id="current_year"></br></h1>
+                <h2 id="num_total"></h2>
+                <h2 id="num_curr"></h2>
+                <p id="comp_list"></p>
+
+            </div>
+            <div class="company_disp" id="company_info">
+                <h2 id="size"></br></h2>
+                <h2 id="company_name"></br></h1>
+                <h3 id="country"></br></h2>
+                <h3 id="category"></br></h2>
+                <h3 id="founding"></br></h2>
+                <h3 id="date"></br></h2>
+                <h3 id="cost"></br></h2>
+            </div>
+           
+        </div>
+        <div id="bottom_div" class="bottom_panel">
+            <svg id = "graphsvg" class="graph_svg">
+                <g id="hovergroup" class="hover_group">
+                </g>
+            </svg>
+        </div>
+    </div>
+    <script>
+        const yearInput = d3.select("#bottom_div");
+
+        const width = yearInput.style("width").replaceAll("px", "") * 0.65; 
+        const height = window.innerHeight * 0.7; 
+        const xCenter = width/2;
+        const yCenter = height/2;
+
+        const graphHeight = 200; 
+        const graphYOffset = 20;
+        const graphXOffset = 30;
+        
+        const yearMin = 1975;
+        const yearMax = 2023;
+        const yearDefault = 1975;
+        let yearCurrent = yearDefault; 
+
+        let svg = d3.select("#svg")
+            .attr("viewBox", [0, 0, width, height]);
+        
+        let sidepanel = d3.select("#side_panel"); 
+        
+        Promise.all(["./data/acquisitions.csv","./data/companies.csv"].map(filename=>d3.csv(filename))).then(graphData=>{
+            const [acquisitions,companies] = graphData;
+            let links = acquisitions.map(d => ({...d}));
+            let nodes = companies.map(d => ({...d})); 
+
+            const processed_data = processData(acquisitions,companies, yearMin, yearMax);
+            const num_acquired_by_year = processed_data[0];
+            const num_founded_by_year = processed_data[1];
+
+            let nodesubset = nodes.filter(function(d){
+                return d["YearFounded"] <= yearDefault; 
+            });
+
+            let linksubset = links.filter(function(d){
+                return d["Year"] <= yearDefault;
+            });
+
+            let acquired_overall = linksubset.map(function(d){
+                return d["target"];
+            });
+            let acquired_this_year = links.filter(function(d){
+                return d["Year"] == yearDefault; 
+            }).map(function(d){
+                if(typeof d["target"] == 'object'){
+                    return d["target"]["Company"];
+                } else{
+                    return d["target"];
+                }
+            }); 
+
+            let node = svg.selectAll("g");
+            let link = svg.selectAll("g");
+           
+            let simulation = d3.forceSimulation(nodesubset)
+                .force('link', d3.forceLink(linksubset).id(d => d["Company"]).distance(80).strength(0.3))
+                .force('charge', d3.forceManyBody().strength(-8))
+                .force("centerX", d3.forceX(xCenter).strength(0.01))
+                .force("centerY", d3.forceY(yCenter).strength(0.01))
+                .force("collide", d3.forceCollide().radius(d => d.r + 1))
+                .on('tick', ticked);
+            
+            function ticked() {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+                node
+                    .attr("transform", function(d){return 'translate(' + d.x + ","+ d.y + ')'});
+
+            }
+            
+            restart(nodesubset, linksubset, acquired_overall); 
+            updateMicrosoftPanel(yearDefault, linksubset.length, acquired_this_year);
+
+            function updateCompPanel(d){
+                d3.select("#company_name").text(d["Company"]); 
+                d3.select("#country").text(d["Country"]); 
+                const a_data= d3.filter(acquisitions, function(e){
+                    return e["target"] == d["Company"];
+                });
+                d3.select("#founding").text("Year Founded: " + d["YearFounded"]); 
+                d3.select("#date").text("Date Acquired: " + a_data[0]["Date"]); 
+                d3.select("#category").text(d["Category"]); 
+                d3.select("#cost").text("Acquired Amount: " + a_data[0]["Cost"]); 
+            }
+
+            function clearCompPanel(){
+                d3.select("#company_name").text(""); 
+                d3.select("#country").text(""); 
+                d3.select("#date").text(""); 
+                d3.select("#category").text(""); 
+                d3.select("#founding").text(""); 
+                d3.select("#cost").text(""); 
+            }
+
+            function updateMicrosoftPanel(year, num_total, asubset){
+                d3.select("#current_year").text("Year: " + year); 
+                d3.select("#num_curr").text("Companies acquired in " + year  + ": " + asubset.length); 
+                d3.select("#num_total").text("Companies acquired total: " + num_total); 
+                let companylist = "";
+                asubset.forEach((element) => {
+                    companylist = companylist + element + ", "
+                })
+                if(companylist.length > 0){
+                    d3.select("#comp_list").text("The companies Microsoft acquired this year are " + companylist); 
+                }   
+                
+            }
+        
+            function restart(nsubset, lsubset, asubset){
+                
+                svg.selectAll("g")
+                .data(nsubset, d => d.id)
+                .join(
+                    function(enter){
+                        node = enter.append("g").attr("id", function(d){
+                            return d["Company"].replaceAll(" ", "").replaceAll(/[0-9'.,\/#!$%\^&\*;:{}=\-_`~()]/g,""); 
+                        })
+                        .attr("transform", function(d){
+                            return "translate(" + d.x + ","+ d.y + ")";   
+                        })
+                        .attr("class", function(d){
+                            if(d["Company"] == "Microsoft Corp"){
+                                return "microsoft_node"; 
+                            } else {
+                                return "child_node"; 
+                            }
+                        })
+                        .on("mouseover", function(e, d){
+                            if(d["Company"] != "Microsoft Corp"){
+                                d3.select(this)
+                                .transition()
+                                .attr("class", "hover_node");
+                                updateCompPanel(d);
+                        }})
+                        .on("mouseout", function(e, d){
+                            if(d["Company"] != "Microsoft Corp"){
+                                d3.select(this).transition().attr("class", "child_node");
+                                clearCompPanel();
+                            }
+                        });
+
+                        node.append("circle")
+                    
+                        node.append("text")
+                            .attr("dx", -3)
+                            .text(d => d["Company"]);
+                        node.exit().remove();        
+                    }
+                )
+                
+                asubset.forEach(d => {
+                    let id = String(d); 
+                    id = id.replaceAll(" ", "").replaceAll(/[0-9'.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+                    let selected = d3.selectAll("#" + id)
+                        .attr("class", "acquired_node")
+                        .on("mouseout", function(e, d){
+                            d3.select(this).transition().attr("class", "acquired_node");
+                            clearCompPanel();
+                        })
+                        .select("text")
+                        .text("");
+                });
+                
+                link.exit().remove();
+                simulation.nodes(nsubset);
+                simulation.force("link").links(lsubset);
+                simulation.force("center", d3.forceCenter(xCenter, yCenter));
+                simulation.alpha(1).restart(); 
+            }
+            
+            let graphsvg = yearInput
+                .select("#graphsvg")
+                .attr("height", graphHeight)
+                .on("pointerenter pointermove", hoverMouseOn)
+                .on("pointerleave", hoverMouseOff)
+                .on("click", drag)
+                .call(d3.drag().on("drag", drag));
+
+            let timeline_width = yearInput.style("width").replaceAll("px", "");
+            
+            let extentY = d3.extent(num_founded_by_year, d => d[1]);
+            let scaleX = d3.scaleLinear([yearMin, yearMax], [graphXOffset, (+timeline_width - graphXOffset)]);
+            let scaleY = d3.scaleLinear(extentY, [graphHeight, graphYOffset]);
+
+            let hoverLineGroup = graphsvg.select("#hovergroup").attr("opacity", 0); 
+            let hoverLine = hoverLineGroup.append("line")
+                .attr("x1", 10)
+                .attr("x2", 10)
+                .attr("y1", 0)
+                .attr("y2", graphHeight); 
+            let hoverC1 = hoverLineGroup.append("circle").attr("r", 4); 
+            let hoverC2 = hoverLineGroup.append("circle").attr("r", 4); 
+
+            function drag(e){
+                nodesubset = nodes.filter(function(d){
+                    return d["YearFounded"] <= yearCurrent; 
+                })
+                linksubset = links.filter(function(d){
+                    return d["Year"] <= yearCurrent;
+                });
+                acquired_overall = linksubset.map(function(d){
+                    if(typeof d["target"] == 'object'){
+                        return d["target"]["Company"];
+                    } else{
+                        return d["target"];
+                    }
+                    
+                });
+                let acquired_this_year = links.filter(function(d){
+                    return d["Year"] == yearCurrent; 
+                }).map(function(d){
+                    if(typeof d["target"] == 'object'){
+                        return d["target"]["Company"];
+                    } else{
+                        return d["target"];
+                    }
+                }); 
+                updateMicrosoftPanel(yearCurrent, linksubset.length, acquired_this_year)
+                restart(nodesubset, linksubset, acquired_overall); 
+            }
+
+            function hoverMouseOff(){
+                hoverLineGroup.style("display", "none"); 
+            }
+
+            function hoverMouseOn(e){
+                hoverLineGroup.style("display", null).attr("opacity", 1); 
+                const mouseX = d3.pointer(e)[0]; 
+                const mouseY = d3.pointer(e)[1]; 
+                const graphX = scaleX.invert(mouseX); 
+                yearCurrent = Math.min(Math.max(Math.round(graphX), yearMin), yearMax);
+                const graphX_snap = scaleX(yearCurrent); 
+                const acquired_data = num_acquired_by_year.get(yearCurrent); 
+                const founded_data = num_founded_by_year.get(yearCurrent); 
+
+                hoverLineGroup.selectAll("text")
+                    .data([,])
+                    .join("text")
+                    .call(text => text
+                        .selectAll("tspan")
+                        .data([yearCurrent, `Num acquired: ${acquired_data}`, `Num founded: ${founded_data}`])
+                        .join("tspan")
+                        .attr("x", graphX_snap)
+                        .attr("y", (d, i) => `${i * 1.1 + 2}em`)
+                        .attr("class", (d, i) => `hovertext_${i}`)
+                        .text(d => d)
+                    );
+
+                hoverLine.attr("x1", graphX_snap).attr("x2", graphX_snap); 
+                hoverC1.attr("transform", `translate(${graphX_snap}, ${scaleY(acquired_data) - graphYOffset})`); 
+                hoverC2.attr("transform", `translate(${graphX_snap}, ${scaleY(founded_data) - graphYOffset})`);
+
+            }
+
+            let linGen = d3.line()
+                .x(function(d){return scaleX(d[0])})
+                .y(function(d){return scaleY(d[1])});
+            
+            let pathData_year_acquired = linGen(num_acquired_by_year);
+            let pathData_year_founded = linGen(num_founded_by_year);
+            
+            graphsvg.append("path")
+            .attr("d", pathData_year_acquired)
+            .attr("stroke", "black")
+            .attr("transform", `translate(0,${-graphYOffset})`)
+            .attr("fill", "none"); 
+
+            graphsvg.append("path")
+            .attr("d", pathData_year_founded)
+            .attr("stroke", "blue")
+            .attr("transform", `translate(0,${-graphYOffset})`)
+            .attr("fill", "none"); 
+
+            const xAxis = d3.axisBottom()
+                .scale(scaleX)
+                .tickFormat(function(d){
+                    return String(d);
+                });
+
+            graphsvg.append('g')
+            .attr("transform", `translate(0, ${graphHeight - graphYOffset})`)
+            .attr("class", "x_axis")
+            .call(xAxis);
+
+        })
+        
+
+        
+    </script>
+</body>
+</html>
