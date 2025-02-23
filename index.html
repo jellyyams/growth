@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="main_body" id="main_body">
-        <svg id="svg" class="svg_body"></svg>
+        <svg id="svg" type="image/svg+xml" class="svg_body"></svg>
         <div id="side_panel" class="side_panel">
             <div class="microsoft_disp">
                 <h1>Microsoft Acquisitions</h1>
@@ -26,11 +26,11 @@
             <div class="company_disp" id="company_info">
                 <h2 id="size"></br></h2>
                 <h2 id="company_name"></br></h1>
-                <h3 id="country"></br></h2>
-                <h3 id="category"></br></h2>
-                <h3 id="founding"></br></h2>
-                <h3 id="date"></br></h2>
-                <h3 id="cost"></br></h2>
+                <h2 id="country"></br></h2>
+                <h2 id="category"></br></h2>
+                <h2 id="founding"></br></h2>
+                <h2 id="date"></br></h2>
+                <h2 id="cost"></br></h2>
             </div>
            
         </div>
@@ -45,7 +45,7 @@
         const yearInput = d3.select("#bottom_div");
 
         const width = yearInput.style("width").replaceAll("px", "") * 0.65; 
-        const height = window.innerHeight * 0.7; 
+        const height = window.innerHeight * 0.8; 
         const xCenter = width/2;
         const yCenter = height/2;
 
@@ -178,6 +178,7 @@
                                 .transition()
                                 .attr("class", "hover_node");
                                 updateCompPanel(d);
+                                d3.select(this).select("circle").attr("r", 10)
                         }})
                         .on("mouseout", function(e, d){
                             if(d["Company"] != "Microsoft Corp"){
@@ -187,6 +188,13 @@
                         });
 
                         node.append("circle")
+                            .attr("r", function(d){
+                                if(d["Company"] != "Microsoft Corp"){
+                                    return 10;
+                                } else{
+                                    return 100;
+                                }
+                            });
                     
                         node.append("text")
                             .attr("dx", -3)
@@ -202,10 +210,11 @@
                         .attr("class", "acquired_node")
                         .on("mouseout", function(e, d){
                             d3.select(this).transition().attr("class", "acquired_node");
+                            d3.select(this).select("circle").attr("r", 2);
                             clearCompPanel();
                         })
-                        .select("text")
-                        .text("");
+                    selected.select("circle").attr("r", 2);
+                    selected.select("text").text("");
                 });
                 
                 link.exit().remove();
