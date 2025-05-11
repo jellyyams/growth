@@ -49,6 +49,7 @@
 }
 .acquired_node circle{
     fill: black; 
+    z-index: 1;
     r: 2; 
 }
 
@@ -75,6 +76,22 @@
     height: 80%;
     float: left;
 }
+.tippy-box{
+    color: #000000;
+    background-color: white;
+    font-family: 'Courier New', Courier, monospace;
+    border-radius: 0px;
+    padding: 5px 8px;
+    border-style: solid;
+}
+.tippy-box[data-theme~='dark']{
+    background-color: white; 
+    border-top-color: white;
+}
+
+.tippy-arrow{
+    color: black;
+}
 
 .graph_svg {
     width: 100%;
@@ -94,11 +111,12 @@
 }
 
 h1{
-    font-size: 1.5rem;
+    font-size: 2rem;
+    font-weight:normal; 
 }
 
 h2{
-    font-size: 1rem;
+    font-size: 1.5rem;
 }
 
 

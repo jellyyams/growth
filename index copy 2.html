@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="./style.css">
     <script src="./dataProcessing.js"></script>>
-    <script src="./tippy.js"></script>>
 
 </head>
 <body>
@@ -17,13 +14,14 @@
         <svg id="svg" type="image/svg+xml" class="svg_body"></svg>
         <div id="side_panel" class="side_panel">
             <div class="microsoft_disp">
-                <h1><b>Growth</b> - Microsoft Acquisitions</h1>
+                <h1>Microsoft Acquisitions</h1>
                 <p>Microsoft has acquired over 200 companies in its 50 year history. Click and drag on the timeline below to view this process. Hover over each node for more details about each company.</p>
                 <p>All acquisition data was sourced from <a href="https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Microsoft">this Wikipedia page.</a></p>
-                <h2 id="current_year"></br></h2>
-                <h3 id="num_total"></h3>
-                <h3 id="num_curr"></h3>
+                <h1 id="current_year"></br></h1>
+                <h2 id="num_total"></h2>
+                <h2 id="num_curr"></h2>
                 <p id="comp_list"></p>
+
             </div>
            
         </div>
@@ -149,11 +147,38 @@
                             if(d["Company"] != "Microsoft Corp"){
                                 d3.select(this).transition().attr("class", "hover_node");
                                 d3.select(this).select("circle").attr("r", 10);
-                                                         
+                                const tooltipText = `${d["Company"]} \n Founded in ${d["YearFounded"]}, ${d["Country"]}\n Acquired on ${d["Date"]} for ${d["Cost"]}`;
+                                
+
+                                const tooltip = d3.select(this).append("text")
+                                    .attr("class", "tooltip")
+                                
+                                tooltip.selectAll("tspan")
+                                    .data(tooltipText.split("\n"))
+                                    .join("tspan")
+                                    .attr("dy", "1em")
+                                    .attr("x", "0px")
+                                    .text((text) => text );
+                          
+                    
+                                // tooltip.append("text")
+                                //     .attr("class", "company_name")
+                                //     .text(d => d["Company"]);
+                                
+                                // tooltip.append("text")
+                                //     .attr("dy", 28)
+                                //     .attr("class", "country")
+                                //     .text(d => `Founded in ${d["YearFounded"]}, ${d["Country"]}`);
+
+                                // tooltip.append("text")
+                                //     .attr("dy", 42)
+                                //     .attr("class", "date")
+                                //     .text(d => `Acquired on ${d["Date"]} for ${d["Cost"]}` );                                
                         }})
                         .on("mouseout", function(e, d){
                             if(d["Company"] != "Microsoft Corp"){
                                 d3.select(this).transition().attr("class", "child_node");
+                                d3.select(this).selectAll("tspan").remove();
                             }
                         });
 
@@ -166,15 +191,29 @@
                                 }
                             });
                         
-                        node.append("text")
-                        .text(function(d){
-                            if(d["Company"] == "Microsoft Corp"){
-                                return "Microsoft Corp";
-                            } else {
-                                return ""; 
-                            }
-                        })
+                        // let tooltip = node.append("text")
+                        //     .attr("class", "tooltip")
+                        //     .attr("visibility", function(d){
+                        //         if(d["Company"] != "Microsoft Corp"){
+                        //             return "hidden";
+                        //         } else{
+                        //             return "visible";
+                        //         }
+                        //     }); 
+                    
+                        // tooltip.append("text")
+                        //     .attr("class", "company_name")
+                        //     .text(d => d["Company"]);
+                        
+                        // tooltip.append("text")
+                        //     .attr("dy", 28)
+                        //     .attr("class", "country")
+                        //     .text(d => `Founded in ${d["YearFounded"]}, ${d["Country"]}`);
 
+                        // tooltip.append("text")
+                        //     .attr("dy", 42)
+                        //     .attr("class", "date")
+                        //     .text(d => `Acquired on ${d["Date"]} for ${d["Cost"]}` );
                         
 
                         node.exit().remove();        
@@ -189,10 +228,10 @@
                         .on("mouseout", function(e, d){
                             d3.select(this).transition().attr("class", "acquired_node");
                             d3.select(this).select("circle").attr("r", 2);
+                            d3.select(this).select("g").attr("opacity", 0);
                         })
                     selected.select("circle").attr("r", 2);
                 });
-                setToolTips(); 
                 
                 link.exit().remove();
                 simulation.nodes(nsubset);
@@ -224,8 +263,6 @@
             let hoverC1 = hoverLineGroup.append("circle").attr("r", 4); 
             let hoverC2 = hoverLineGroup.append("circle").attr("r", 4); 
 
-            
-
             function drag(e){
                 nodesubset = nodes.filter(function(d){
                     return d["YearFounded"] <= yearCurrent; 
@@ -250,7 +287,6 @@
                         return d["target"];
                     }
                 }); 
-                
                 updateMicrosoftPanel(yearCurrent, linksubset.length, acquired_this_year)
                 restart(nodesubset, linksubset, acquired_overall); 
             }
@@ -260,7 +296,6 @@
             }
 
             function hoverMouseOn(e){
-                
                 hoverLineGroup.style("display", null).attr("opacity", 1); 
                 const mouseX = d3.pointer(e)[0]; 
                 const mouseY = d3.pointer(e)[1]; 
@@ -277,13 +312,7 @@
                         .selectAll("tspan")
                         .data([yearCurrent, `Num acquired: ${acquired_data}`, `Num founded: ${founded_data}`])
                         .join("tspan")
-                        .attr("x", function(d, i) {
-                            if(yearCurrent < 2018){
-                                return graphX_snap + 5;
-                            } else {
-                                return graphX_snap - 160;
-                            }
-                        })
+                        .attr("x", graphX_snap)
                         .attr("y", (d, i) => `${i * 1.1 + 2}em`)
                         .attr("class", (d, i) => `hovertext_${i}`)
                         .text(d => d)

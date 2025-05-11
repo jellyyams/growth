@@ -39,3 +39,22 @@ function processData(aSet, cSet, yearStart, yearEnd){
 
     return [sortedMapa, sortedMapc];
 }
+
+function combineData(aSet, cSet){
+    for(var i = 0; i < cSet.length; i++){
+        let aData = aSet.filter(function(d){
+            return d["target"] == cSet[i]["Company"]
+        })
+        if(aData.length > 0){
+            cSet[i]["Date"] = aData[0]["Date"]
+            cSet[i]["Cost"] = aData[0]["Cost"]
+        } else {
+            cSet[i]["Date"] = "n/a"
+            cSet[i]["Cost"] = "n/a"
+        }
+        
+    }
+
+    return cSet; 
+
+}
