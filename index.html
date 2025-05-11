@@ -178,11 +178,13 @@
                                 .transition()
                                 .attr("class", "hover_node");
                                 updateCompPanel(d);
-                                d3.select(this).select("circle").attr("r", 10)
+                                d3.select(this).select("circle").attr("r", 10);
+                                d3.select(this).select("text").attr("opacity", 1);
                         }})
                         .on("mouseout", function(e, d){
                             if(d["Company"] != "Microsoft Corp"){
                                 d3.select(this).transition().attr("class", "child_node");
+                                d3.select(this).select("text").attr("opacity", 0)
                                 clearCompPanel();
                             }
                         });
@@ -198,6 +200,13 @@
                     
                         node.append("text")
                             .attr("dx", -3)
+                            .attr("opacity", function(d){
+                                if(d["Company"] != "Microsoft Corp"){
+                                    return 0;
+                                } else{
+                                    return 1;
+                                }
+                            })
                             .text(d => d["Company"]);
                         node.exit().remove();        
                     }
@@ -341,7 +350,6 @@
         })
         
 
-        
     </script>
 </body>
 </html>
