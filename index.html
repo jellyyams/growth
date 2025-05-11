@@ -20,10 +20,11 @@
                 <h1><b>Growth</b> - Microsoft Acquisitions</h1>
                 <p>Microsoft has acquired over 200 companies in its 50 year history. Click and drag on the timeline below to view this process. Hover over each node for more details about each company.</p>
                 <p>All acquisition data was sourced from <a href="https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Microsoft">this Wikipedia page.</a></p>
-                <h2 id="current_year"></br></h2>
-                <h3 id="num_total"></h3>
-                <h3 id="num_curr"></h3>
+                <h2>In <b id="current_year">year number</b>, Microsoft acquired <b id="num_curr">number</b> for a total of <b  id="num_total">number</b> so far.</h2>
                 <p id="comp_list"></p>
+            </div>
+            <div id="final_note" class="final_note">
+                <p>As of 2023, Microsoft hasasdfa sdkjf kwejrwkje. Microsoft sdlflaskdflka sldkfls  lklwelrlk asdlfajl d</p>
             </div>
            
         </div>
@@ -53,9 +54,7 @@
 
         let svg = d3.select("#svg")
             .attr("viewBox", [0, 0, width, height]);
-        
-        let sidepanel = d3.select("#side_panel"); 
-        
+                
         Promise.all(["./data/acquisitions.csv","./data/companies2.csv"].map(filename=>d3.csv(filename))).then(graphData=>{
             const [acquisitions,companies] = graphData;
             let combined = combineData(acquisitions, companies);
@@ -113,13 +112,34 @@
             updateMicrosoftPanel(yearDefault, linksubset.length, acquired_this_year);
 
             function updateMicrosoftPanel(year, num_total, asubset){
-                d3.select("#current_year").text("Year: " + year); 
-                d3.select("#num_curr").text("Companies acquired in " + year  + ": " + asubset.length); 
-                d3.select("#num_total").text("Companies acquired total: " + num_total); 
+                d3.select("#current_year").text(year); 
+                if(year == 2023){
+                    d3.select("#final_note").attr("opacity", "visible");
+                    console.log(d3.select("#final_note"));
+                } else {
+                    d3.select("#final_note").attr("opacity", "hidden");
+                }
+
+                if(num_total == 1){
+                    d3.select("#num_total").text(num_total + " acquisition"); 
+                } else {
+                    d3.select("#num_total").text(num_total + " acquisitions"); 
+                }
+                if(asubset.length == 1){
+                    d3.select("#num_curr").text(asubset.length + " company"); 
+                } else {
+                    d3.select("#num_curr").text(asubset.length + " companies"); 
+
+                }
                 let companylist = "";
-                asubset.forEach((element) => {
-                    companylist = companylist + element + ", "
-                })
+                for(var i = 0; i < asubset.length; i++){
+                    if (i == asubset.length - 1){
+                        companylist += " and " + asubset[i] + "."
+                    } else {
+                        companylist +=  asubset[i] + ", "
+                    }
+                }
+     
                 if(companylist.length > 0){
                     d3.select("#comp_list").text("The companies Microsoft acquired this year are " + companylist); 
                 }   
@@ -174,9 +194,6 @@
                                 return ""; 
                             }
                         })
-
-                        
-
                         node.exit().remove();        
                     }
                 )
@@ -192,7 +209,8 @@
                         })
                     selected.select("circle").attr("r", 2);
                 });
-                setToolTips(); 
+                setToolTips();
+
                 
                 link.exit().remove();
                 simulation.nodes(nsubset);
@@ -223,8 +241,6 @@
                 .attr("y2", graphHeight); 
             let hoverC1 = hoverLineGroup.append("circle").attr("r", 4); 
             let hoverC2 = hoverLineGroup.append("circle").attr("r", 4); 
-
-            
 
             function drag(e){
                 nodesubset = nodes.filter(function(d){

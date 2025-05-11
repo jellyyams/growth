@@ -84,10 +84,6 @@
     padding: 5px 8px;
     border-style: solid;
 }
-.tippy-box[data-theme~='dark']{
-    background-color: white; 
-    border-top-color: white;
-}
 
 .tippy-arrow{
     color: black;
@@ -97,7 +93,10 @@
     width: 100%;
     float: bottom;
     cursor: pointer; 
-    float: bottom; 
+}
+.graph_svg:active
+{
+    cursor:move;
 }
 .bottom_panel{
     position: absolute; 
@@ -117,8 +116,18 @@ h1{
 
 h2{
     font-size: 1.5rem;
+    font-weight: normal;
 }
 
+h3{
+    font-weight: normal;
+}
+
+.final_note{
+    border-style: solid;
+    padding: 1rem; 
+    visibility: hidden; 
+}
 
 p{
     font-size: 1rem;
