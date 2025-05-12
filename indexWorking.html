@@ -105,18 +105,10 @@
                     .attr("x2", d => d.target.x)
                     .attr("y2", d => d.target.y);
                 nodes
-                    .attr("transform", function(d){
-                        if(d.x == null){
-                            console.log(d)
-                        }
-                        return 'translate(' + d.x + ","+ d.y + ')'
-                    });
+                    .attr("transform", function(d){return 'translate(' + d.x + ","+ d.y + ')'});
 
             }
             
-            function returnid(name){
-                return name.replaceAll(" ", "").replaceAll(/[0-9'.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-            }
             restart(nodesubset, linksubset, acquired_overall); 
             updateMicrosoftPanel(yearDefault, linksubset.length, acquired_this_year);
 
@@ -159,30 +151,39 @@
             }
         
             function restart(nsubset, lsubset, asubset){
-                // console.log(nsubset)
-                let updated_nodes = svg.selectAll("g")
+                console.log(nsubset); 
+                console.log(lsubset); 
+                console.log(asubset); 
+                
+                svg.selectAll("g")
                 .data(nsubset, d => d.id)
                 .join(
                     function(enter){
-                        nodes = enter.append("g")
-                            .attr("class", function(d){
-                                if(d["Company"] == "Microsoft Corp"){
-                                    return "microsoft_node"; 
-                                } else {
-                                    return "child_node"; 
-                                }
-                            })
-                            .on("mouseover", function(e, d){
-                                if(d["Company"] != "Microsoft Corp"){
-                                    d3.select(this).transition().attr("class", "hover_node");
-                                    d3.select(this).select("circle").attr("r", 10);
-                                                            
-                            }})
-                            .on("mouseout", function(e, d){
-                                if(d["Company"] != "Microsoft Corp"){
-                                    d3.select(this).transition().attr("class", "child_node");
-                                }
-                            });
+                        nodes = enter.append("g").attr("id", function(d){
+                            return d["Company"].replaceAll(" ", "").replaceAll(/[0-9'.,\/#!$%\^&\*;:{}=\-_`~()]/g,""); 
+                        })
+                        .attr("transform", function(d){
+                            return "translate(" + d.x + ","+ d.y + ")";   
+                        })
+                        .attr("class", function(d){
+                            if(d["Company"] == "Microsoft Corp"){
+                                console.log("new microsoft")
+                                return "microsoft_node"; 
+                            } else {
+                                return "child_node"; 
+                            }
+                        })
+                        .on("mouseover", function(e, d){
+                            if(d["Company"] != "Microsoft Corp"){
+                                d3.select(this).transition().attr("class", "hover_node");
+                                d3.select(this).select("circle").attr("r", 10);
+                                                         
+                        }})
+                        .on("mouseout", function(e, d){
+                            if(d["Company"] != "Microsoft Corp"){
+                                d3.select(this).transition().attr("class", "child_node");
+                            }
+                        });
 
                         nodes.append("circle")
                             .attr("r", function(d){
@@ -202,27 +203,12 @@
                                 }
                             })
                         nodes.exit().remove();        
-                    },
-                    // function(update){
-                    //     const stray = update._groups[0]
-                    //     if(stray[0] != null){
-                    //         console.log("oooo")
-                    //         console.log(stray[0].__data__)
-                    //         const actual_name = stray[0].__data__["Company"];
-                    //         const actual_id = returnid(actual_name);
-                   
-                    //         console.log(stray[0]);
-                    //     }}
+                    }
                 )
-                if(updated_nodes._groups[0][0] != null){
-                    nodes = nodes.merge(updated_nodes);
-                }
                 
-                n = svg.selectAll("g");
-                n.attr("id", d => returnid(d["Company"]));
-  
                 asubset.forEach(d => {
-                    let id = returnid(String(d));
+                    let id = String(d); 
+                    id = id.replaceAll(" ", "").replaceAll(/[0-9'.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
                     let selected = d3.selectAll("#" + id)
                         .attr("class", "acquired_node")
                         .on("mouseout", function(e, d){

@@ -110,8 +110,7 @@
 }
 
 h1{
-    font-size: 2rem;
-    font-weight:normal; 
+    font-size: 3rem;
 }
 
 h2{
@@ -125,8 +124,7 @@ h3{
 
 .final_note{
     border-style: solid;
-    padding: 1rem; 
-    visibility: hidden; 
+    padding: 0.5rem; 
 }
 
 p{

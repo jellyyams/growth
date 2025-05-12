@@ -1,7 +1,6 @@
 Company,YearFounded,Country,Category,Date,Cost
-Softimage,1986,Canada,3D Graphics,,
-Microsoft Corp,1975,United States,Parent,,
 RenderMorphics,1993,United States,3D Graphics,,
+Softimage,1987,Canada,3D Graphics,,
 Caligari Corporation,1986,United States,3D Graphics,,
 Simplygon,2006,Sweden,3D Graphics,,
 Affirmed Networks,2010,United States,5G Networking,,
@@ -276,3 +275,4 @@ CompareNet,1995,United States,Website ,,
 MongoMusic,1999,United States,Website ,,
 Yupi,1999,United States,Website ,,
 Jellyfish.com,2004,United States,Website ,,
+Microsoft Corp,1975,United States,Parent,,
