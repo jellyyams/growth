@@ -1,5 +1,17 @@
+:root {
+    --red: #F14F21; 
+    --green: #7EB900; 
+    --blue: #00A3EE; 
+    --yellow: #FEB800;
+    --orange: #d13f13; 
+    --lorange: #f5977a;
+    --dark-blue: #0459cc; 
+    --blackish: #0f051c;
+
+
+}
 .child_node circle{
-    fill: pink;
+    fill: var(--lorange);
     r: 10; 
     z-index: 2;
 }
@@ -10,14 +22,17 @@
 }
 
 .hover_group line{
-    stroke: black; 
+    stroke: var(--blackish); 
 }
 
 .hover_node circle{
-    fill: blue;
+    fill: var(--yellow);
     r:20;
     z-index: 2;
 
+}
+.hovertext_2 {
+    fill: var(--dark-blue)
 }
 
 .hover_node text{
@@ -27,28 +42,26 @@
 .microsoft_node text{
     font-size: 20px;
     z-index: 1;
+    fill: var(--dark-blue);
 }
 
 .microsoft_node circle{
     fill: none; 
-    stroke: black;
+    stroke: var(--orange);
     r: 100; 
 }
-.hovertext_2{
-    fill: blue; 
 
-}
 .side_panel {
     border: 1px;
     stroke-width: 1px;
-    stroke: black;
+    fill: var(--blackish);
     float: right;
     width: 30%;
     height: 100%;
     text-align: right;
 }
 .acquired_node circle{
-    fill: black; 
+    fill: var(--orange); 
     z-index: 1;
     r: 2; 
 }
@@ -77,7 +90,7 @@
     float: left;
 }
 .tippy-box{
-    color: #000000;
+    color: var(--dark-blue);
     background-color: white;
     font-family: 'Courier New', Courier, monospace;
     border-radius: 0px;
@@ -125,8 +138,15 @@ h3{
 .final_note{
     border-style: solid;
     padding: 0.5rem; 
+    width: auto;
+    color: var(--dark-blue);
+    stroke: var(--dark-blue);
 }
 
 p{
     font-size: 1rem;
+}
+
+a{
+    color: var(--dark-blue);
 }

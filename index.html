@@ -18,13 +18,13 @@
         <div id="side_panel" class="side_panel">
             <div class="microsoft_disp">
                 <h1>Growth</h1>
-                <p>Microsoft has acquired over 200 companies in its 50 year history. Click and drag on the timeline below to view this process. Hover over each nodes for more details about each company.</p>
-                <p>All acquisition data was sourced from <a href="https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Microsoft">this Wikipedia page.</a></p>
+                <p>Microsoft has acquired almost 300 companies in its 50 year history. Click and drag on the timeline below to view its evolution. Hover over each nodes for more details about each company.</p>
+                <p>Acquisition data was primarily sourced from <a href="https://www.microsoft.com/en-us/investor/acquisition-history">Microsoft's company website</a>, <a href="https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Microsoft">this Wikipedia page</a>, and cross referenced with other public databases and SEC filings.</p>
                 <h2>In <b id="current_year">year number</b>, Microsoft acquired <b id="num_curr">number</b> for a total of <b  id="num_total">number</b> so far.</h2>
                 <p id="comp_list"></p>
             </div>
             <div id="final_note" class="final_note">
-                <p>As of 2023, Microsoft hasasdfa sdkjf kwejrwkje. Microsoft sdlflaskdflka sldkfls  lklwelrlk asdlfajl d</p>
+                <p>We lack data for ways in which Microsoft will sustain itself and continue to influence the tech industry ecosystem past 2023. Although the data ends here, the evolution of Microsoft continues. </p>
             </div>
            
         </div>
@@ -159,7 +159,7 @@
             }
         
             function restart(nsubset, lsubset, asubset){
-                // console.log(nsubset)
+              
                 let updated_nodes = svg.selectAll("g")
                 .data(nsubset, d => d.id)
                 .join(
@@ -202,17 +202,7 @@
                                 }
                             })
                         nodes.exit().remove();        
-                    },
-                    // function(update){
-                    //     const stray = update._groups[0]
-                    //     if(stray[0] != null){
-                    //         console.log("oooo")
-                    //         console.log(stray[0].__data__)
-                    //         const actual_name = stray[0].__data__["Company"];
-                    //         const actual_id = returnid(actual_name);
-                   
-                    //         console.log(stray[0]);
-                    //     }}
+                    }
                 )
                 if(updated_nodes._groups[0][0] != null){
                     nodes = nodes.merge(updated_nodes);
@@ -346,7 +336,7 @@
 
             graphsvg.append("path")
             .attr("d", pathData_year_founded)
-            .attr("stroke", "blue")
+            .attr("stroke", "#0459cc")
             .attr("transform", `translate(0,${-graphYOffset})`)
             .attr("fill", "none"); 
 
