@@ -56,7 +56,7 @@
     stroke-width: 1px;
     fill: var(--blackish);
     float: right;
-    width: 30%;
+    width: 35%;
     height: 100%;
     text-align: right;
 }
@@ -123,11 +123,12 @@
 }
 
 h1{
-    font-size: 3rem;
+    font-size: 2.5rem;
+    margin: 1rem 0rem;
 }
 
 h2{
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: normal;
 }
 
@@ -144,7 +145,7 @@ h3{
 }
 
 p{
-    font-size: 1rem;
+    font-size: 15px;
 }
 
 a{

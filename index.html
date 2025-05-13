@@ -217,7 +217,9 @@
                         .attr("class", "acquired_node")
                         .on("mouseout", function(e, d){
                             d3.select(this).transition().attr("class", "acquired_node");
+                            d3.select(this).select("circle").transition().attr("r", 2);
                         })
+                        .select("circle").attr("r", 2);
                 });
 
                 setToolTips();
