@@ -38,7 +38,7 @@
     <script>
         const yearInput = d3.select("#bottom_div");
 
-        const width = yearInput.style("width").replaceAll("px", "") * 0.65; 
+        const width = yearInput.style("width").replaceAll("px", "") * 0.70; 
         const height = window.innerHeight * 0.8; 
         const xCenter = width/2;
         const yCenter = height/2;
@@ -217,9 +217,7 @@
                         .attr("class", "acquired_node")
                         .on("mouseout", function(e, d){
                             d3.select(this).transition().attr("class", "acquired_node");
-                            d3.select(this).select("circle").attr("r", 2);
                         })
-                    selected.select("circle").attr("r", 2);
                 });
 
                 setToolTips();
@@ -234,7 +232,6 @@
                 .select("#graphsvg")
                 .attr("height", graphHeight)
                 .on("pointerenter pointermove", hoverMouseOn)
-                .on("pointerleave", hoverMouseOff)
                 .on("click", drag)
                 .call(d3.drag().on("drag", drag));
 
@@ -243,15 +240,18 @@
             let extentY = d3.extent(num_founded_by_year, d => d[1]);
             let scaleX = d3.scaleLinear([yearMin, yearMax], [graphXOffset, (+timeline_width - graphXOffset)]);
             let scaleY = d3.scaleLinear(extentY, [graphHeight, graphYOffset]);
+            const startX = scaleX(yearDefault);
 
-            let hoverLineGroup = graphsvg.select("#hovergroup").attr("opacity", 0); 
+            let hoverLineGroup = graphsvg.select("#hovergroup");
             let hoverLine = hoverLineGroup.append("line")
-                .attr("x1", 10)
-                .attr("x2", 10)
+                .attr("x1", startX)
+                .attr("x2", startX)
                 .attr("y1", 0)
                 .attr("y2", graphHeight); 
-            let hoverC1 = hoverLineGroup.append("circle").attr("r", 4); 
-            let hoverC2 = hoverLineGroup.append("circle").attr("r", 4); 
+            let hoverC1 = hoverLineGroup.append("circle").attr("r", 4)
+            let hoverC2 = hoverLineGroup.append("circle").attr("r", 4)
+
+            updateHoverLine(yearDefault);
 
             function drag(e){
                 nodesubset = nodes_data.filter(function(d){
@@ -281,20 +281,19 @@
                 restart(nodesubset, linksubset, acquired_overall); 
             }
 
-            function hoverMouseOff(){
-                hoverLineGroup.style("display", "none"); 
-            }
 
             function hoverMouseOn(e){
-                
-                hoverLineGroup.style("display", null).attr("opacity", 1); 
                 const mouseX = d3.pointer(e)[0]; 
                 const mouseY = d3.pointer(e)[1]; 
                 const graphX = scaleX.invert(mouseX); 
                 yearCurrent = Math.min(Math.max(Math.round(graphX), yearMin), yearMax);
-                const graphX_snap = scaleX(yearCurrent); 
-                const acquired_data = num_acquired_by_year.get(yearCurrent); 
-                const founded_data = num_founded_by_year.get(yearCurrent); 
+                updateHoverLine(yearCurrent)
+            }
+
+            function updateHoverLine(year){
+                const graphX_snap = scaleX(year); 
+                const acquired_data = num_acquired_by_year.get(year); 
+                const founded_data = num_founded_by_year.get(year); 
 
                 hoverLineGroup.selectAll("text")
                     .data([,])
