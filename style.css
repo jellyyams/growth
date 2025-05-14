@@ -99,7 +99,7 @@
 }
 
 .tippy-arrow{
-    color: black;
+    color: var(--dark-blue);
 }
 
 .graph_svg {
@@ -123,12 +123,12 @@
 }
 
 h1{
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     margin: 1rem 0rem;
 }
 
 h2{
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: normal;
 }
 
@@ -150,7 +150,7 @@ h3{
 }
 
 p{
-    font-size: 15px;
+    font-size: 14px;
 }
 
 a{
