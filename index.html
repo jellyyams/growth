@@ -234,6 +234,7 @@
                 .select("#graphsvg")
                 .attr("height", graphHeight)
                 .on("pointerenter pointermove", hoverMouseOn)
+                .on("pointerleave", hoverMouseOff)
                 .on("click", drag)
                 .call(d3.drag().on("drag", drag));
 
@@ -255,7 +256,15 @@
 
             updateHoverLine(yearDefault);
 
+            function hoverMouseOff(e){
+                updateHoverLine(yearCurrent);
+            }
+
             function drag(e){
+                const mouseX = d3.pointer(e)[0]; 
+                const mouseY = d3.pointer(e)[1]; 
+                const graphX = scaleX.invert(mouseX); 
+                yearCurrent = Math.min(Math.max(Math.round(graphX), yearMin), yearMax);
                 nodesubset = nodes_data.filter(function(d){
                     return d["YearFounded"] <= yearCurrent; 
                 })
@@ -288,8 +297,8 @@
                 const mouseX = d3.pointer(e)[0]; 
                 const mouseY = d3.pointer(e)[1]; 
                 const graphX = scaleX.invert(mouseX); 
-                yearCurrent = Math.min(Math.max(Math.round(graphX), yearMin), yearMax);
-                updateHoverLine(yearCurrent)
+                const yearHover= Math.min(Math.max(Math.round(graphX), yearMin), yearMax);
+                updateHoverLine(yearHover)
             }
 
             function updateHoverLine(year){
@@ -302,10 +311,10 @@
                     .join("text")
                     .call(text => text
                         .selectAll("tspan")
-                        .data([yearCurrent, `Num acquired: ${acquired_data}`, `Num founded: ${founded_data}`])
+                        .data([year, `Num acquired: ${acquired_data}`, `Num founded: ${founded_data}`])
                         .join("tspan")
                         .attr("x", function(d, i) {
-                            if(yearCurrent < 2018){
+                            if(year < 2018){
                                 return graphX_snap + 5;
                             } else {
                                 return graphX_snap - 160;
