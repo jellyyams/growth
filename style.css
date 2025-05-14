@@ -136,6 +136,11 @@ h3{
     font-weight: normal;
 }
 
+.calltoaction{
+    font-weight: bold; 
+    fill: var(--red);
+}
+
 .final_note{
     border-style: solid;
     padding: 0.5rem; 

@@ -44,7 +44,8 @@
         const yCenter = height/2;
 
         const graphHeight = 200; 
-        const graphYOffset = 20;
+        const graphYBottom = 20;
+        const graphYTop = 30; 
         const graphXOffset = 30;
         
         const yearMin = 1975;
@@ -242,7 +243,7 @@
             
             let extentY = d3.extent(num_founded_by_year, d => d[1]);
             let scaleX = d3.scaleLinear([yearMin, yearMax], [graphXOffset, (+timeline_width - graphXOffset)]);
-            let scaleY = d3.scaleLinear(extentY, [graphHeight, graphYOffset]);
+            let scaleY = d3.scaleLinear(extentY, [graphHeight - graphYTop, graphYBottom]);
             const startX = scaleX(yearDefault);
 
             let hoverLineGroup = graphsvg.select("#hovergroup");
@@ -253,14 +254,21 @@
                 .attr("y2", graphHeight); 
             let hoverC1 = hoverLineGroup.append("circle").attr("r", 4)
             let hoverC2 = hoverLineGroup.append("circle").attr("r", 4)
-
+            let popup = graphsvg.append("text")
+                    .text("<- Click and drag!")
+                    .attr("y", graphYBottom - 5)
+                    .attr("x", startX + 5)
+                    .attr("class", "calltoaction");
+                
             updateHoverLine(yearDefault);
 
-            function hoverMouseOff(e){
+            function hoverMouseOff(){
+                popup.attr("opacity", 1);
                 updateHoverLine(yearCurrent);
             }
 
             function drag(e){
+                popup.attr("display", "none");
                 const mouseX = d3.pointer(e)[0]; 
                 const mouseY = d3.pointer(e)[1]; 
                 const graphX = scaleX.invert(mouseX); 
@@ -298,6 +306,9 @@
                 const mouseY = d3.pointer(e)[1]; 
                 const graphX = scaleX.invert(mouseX); 
                 const yearHover= Math.min(Math.max(Math.round(graphX), yearMin), yearMax);
+                popup.attr("opacity", 0);
+                // hoverLine.style("stroke-width", 1);
+                // hoverLineGroup.selectAll("text").style("font-weight", "normal");
                 updateHoverLine(yearHover)
             }
 
@@ -320,14 +331,14 @@
                                 return graphX_snap - 160;
                             }
                         })
-                        .attr("y", (d, i) => `${i * 1.1 + 2}em`)
+                        .attr("y", (d, i) => `${i * 1.1 + 3}em`)
                         .attr("class", (d, i) => `hovertext_${i}`)
                         .text(d => d)
                     );
 
                 hoverLine.attr("x1", graphX_snap).attr("x2", graphX_snap); 
-                hoverC1.attr("transform", `translate(${graphX_snap}, ${scaleY(acquired_data) - graphYOffset})`); 
-                hoverC2.attr("transform", `translate(${graphX_snap}, ${scaleY(founded_data) - graphYOffset})`);
+                hoverC1.attr("transform", `translate(${graphX_snap}, ${scaleY(acquired_data) - (graphYBottom - graphYTop)})`); 
+                hoverC2.attr("transform", `translate(${graphX_snap}, ${scaleY(founded_data) - (graphYBottom - graphYTop)})`);
 
             }
 
@@ -341,13 +352,13 @@
             graphsvg.append("path")
             .attr("d", pathData_year_acquired)
             .attr("stroke", "black")
-            .attr("transform", `translate(0,${-graphYOffset})`)
+            .attr("transform", `translate(0,${-(graphYBottom - graphYTop)})`)
             .attr("fill", "none"); 
 
             graphsvg.append("path")
             .attr("d", pathData_year_founded)
             .attr("stroke", "#0459cc")
-            .attr("transform", `translate(0,${-graphYOffset})`)
+            .attr("transform", `translate(0,${-(graphYBottom - graphYTop)})`)
             .attr("fill", "none"); 
 
             const xAxis = d3.axisBottom()
@@ -357,7 +368,7 @@
                 });
 
             graphsvg.append('g')
-            .attr("transform", `translate(0, ${graphHeight - graphYOffset})`)
+            .attr("transform", `translate(0, ${graphHeight - graphYBottom})`)
             .attr("class", "x_axis")
             .call(xAxis);
 
