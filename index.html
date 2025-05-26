@@ -175,15 +175,13 @@
                             })
                             .on("mouseover", function(e, d){
                                 if(d["Company"] != "Microsoft Corp"){
-                                    d3.select(this).transition().attr("class", "hover_node");
-                                    d3.select(this).select("circle").attr("r", 10);
-                                                            
+                                    d3.select(this).transition().attr("class", "hover_node");                                                           
                             }})
                             .on("mouseout", function(e, d){
                                 if(d["Company"] != "Microsoft Corp"){
                                     d3.select(this).transition().attr("class", "child_node");
                                 }
-                            });
+                            }); 
 
                         nodes.append("circle")
                             .attr("r", function(d){
@@ -201,15 +199,28 @@
                                 } else {
                                     return ""; 
                                 }
-                            })
-                        nodes.exit().remove();        
+                            }) 
+                    }, 
+                    function(update){
+                        update.attr("class",  function(d){
+                            if(d["Company"] == "Microsoft Corp"){
+                                return "microsoft_node"; 
+                            } else {
+                                return "child_node"; 
+                        }}).on("mouseout", function(e, d){
+                            if(d["Company"] != "Microsoft Corp"){
+                                d3.select(this).transition().attr("class", "child_node");
+                            }
+                        });
+                        nodes = nodes.merge(update);  
+                            
+                    }, function(exit){
+                        exit.remove();
                     }
+                        
                 )
-                if(updated_nodes._groups[0][0] != null){
-                    nodes = nodes.merge(updated_nodes);
-                }
                 
-                n = svg.selectAll("g");
+                let n = svg.selectAll("g");
                 n.attr("id", d => returnid(d["Company"]));
   
                 asubset.forEach(d => {
