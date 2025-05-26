@@ -5,7 +5,7 @@ function setToolTips(){
     n.attr("data-tippy-content", (d, i) => {
         if(d["Company"] != "Microsoft Corp"){
             let text =  "<b>" + d["Company"] + "</b>"; 
-            text += ", founded in " + d["YearFounded"] + "," + d["Country"] + ". Acquired on " + d["Date"] + " for " + d["Cost"];
+            text += ", founded in " + d["YearFounded"] + ", " + d["Country"] + ". Acquired on " + d["Date"] + " for " + d["Cost"];
             return text;
         }
         

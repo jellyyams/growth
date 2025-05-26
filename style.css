@@ -66,6 +66,12 @@
     r: 2; 
 }
 
+.newly_acquired circle{
+    fill: var(--blue); 
+    z-index: 1;
+    r: 2; 
+}
+
 .microsoft_disp{
     text-align: right;
 }
@@ -143,7 +149,7 @@ h3{
 
 .final_note{
     border-style: solid;
-    padding: 0.5rem; 
+    padding: 1rem; 
     width: auto;
     color: var(--dark-blue);
     stroke: var(--dark-blue);
@@ -155,4 +161,28 @@ p{
 
 a{
     color: var(--dark-blue);
+}
+
+.key{
+    position:absolute;
+    stroke-width: 1px;
+    border-style: solid;
+    padding: 1rem;
+    height: 8rem;
+    width:16rem;
+}
+
+.key_0{
+    fill: var(--lorange); 
+    r: 10; 
+}
+
+.key_1{
+    fill: var(--orange); 
+    r: 2; 
+}
+
+.key_2{
+    fill: var(--blue); 
+    r: 2; 
 }

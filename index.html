@@ -14,11 +14,15 @@
 </head>
 <body>
     <div class="main_body" id="main_body">
+        <div class="key">
+            <h2>Key</h2>
+                <svg id="key"></svg>
+        </div>
         <svg id="svg" type="image/svg+xml" class="svg_body"></svg>
         <div id="side_panel" class="side_panel">
             <div class="microsoft_disp">
                 <h1>Growth</h1>
-                <p>Microsoft has acquired almost 300 companies in its 50 year history. Click and drag on the timeline below to view its evolution. Hover over each nodes for more details about each company.</p>
+                <p>Microsoft has acquired almost 300 companies in its 50 year history. Click and drag on the timeline below to view its evolution. Hover over each node for more details about each company.</p>
                 <p>Acquisition data was primarily sourced from <a href="https://www.microsoft.com/en-us/investor/acquisition-history">Microsoft's company website</a>, <a href="https://en.wikipedia.org/wiki/List_of_mergers_and_acquisitions_by_Microsoft">this Wikipedia page</a>, and cross referenced with other public databases and SEC filings.</p>
                 <h2>In <b id="current_year">year number</b>, Microsoft acquired <b id="num_curr">number</b> for a total of <b  id="num_total">number</b> so far.</h2>
                 <p id="comp_list"></p>
@@ -55,7 +59,24 @@
 
         let svg = d3.select("#svg")
             .attr("viewBox", [0, 0, width, height]);
-                
+
+        const key_svg = d3.select("#key");
+        key_svg.selectAll("text")
+            .data(["independent company", "acquired company", "newly acquired company"])
+            .join("text")
+            .attr("x", 30)
+            .attr("y", (d, i) => `${i * 1.6 + 1}em`)
+            .text(d => d);
+
+        key_svg.selectAll("circle")
+            .data([10, 2, 2])
+            .join("circle")
+            .attr("r", (d) => d)
+            .attr("class", (d, i) => `key_${i}`)
+            .attr("cx", 10)
+            .attr("cy", (d, i) => `${i * 1.6 + 0.8}em`);
+      
+
         Promise.all(["./data/acquisitions.csv","./data/companies2.csv"].map(filename=>d3.csv(filename))).then(graphData=>{
             const [acquisitions,companies] = graphData;
             let combined = combineData(acquisitions, companies);
@@ -94,8 +115,8 @@
             let simulation = d3.forceSimulation(nodesubset)
                 .force('link', d3.forceLink(linksubset).id(d => d["Company"]).distance(80).strength(0.3))
                 .force('charge', d3.forceManyBody().strength(-8))
-                .force("centerX", d3.forceX(xCenter).strength(0.01))
-                .force("centerY", d3.forceY(yCenter).strength(0.01))
+                .force("centerX", d3.forceX(xCenter).strength(0.02))
+                .force("centerY", d3.forceY(yCenter).strength(0.02))
                 .force("collide", d3.forceCollide().radius(d => d.r + 1))
                 .on('tick', ticked);
             
@@ -118,7 +139,7 @@
             function returnid(name){
                 return name.replaceAll(" ", "").replaceAll(/[0-9'.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
             }
-            restart(nodesubset, linksubset, acquired_overall); 
+            restart(nodesubset, linksubset, acquired_overall, []); 
             updateMicrosoftPanel(yearDefault, linksubset.length, acquired_this_year);
 
             d3.select("#current_year").attr("visibility", "hidden");
@@ -159,7 +180,7 @@
                 d3.select("#comp_list").text(comp_list_text); 
             }
         
-            function restart(nsubset, lsubset, asubset){
+            function restart(nsubset, lsubset, asubset, asubset_thisyear){
               
                 let updated_nodes = svg.selectAll("g")
                 .data(nsubset, d => d.id)
@@ -234,11 +255,22 @@
                         .select("circle").attr("r", 2);
                 });
 
+                asubset_thisyear.forEach(d => {
+                    let id = returnid(String(d));
+                    let selected = d3.selectAll("#" + id)
+                        .attr("class", "newly_acquired")
+                        .on("mouseout", function(e, d){
+                            d3.select(this).transition().attr("class", "newly_acquired");
+                            d3.select(this).select("circle").transition().attr("r", 2);
+                        })
+                        .select("circle").attr("r", 2);
+
+                });
+
                 setToolTips();
                 links.exit().remove();
                 simulation.nodes(nsubset);
-                simulation.force("link").links(lsubset);
-                simulation.force("center", d3.forceCenter(xCenter, yCenter));
+                simulation.force("link").links(lsubset).strength(0.2);
                 simulation.alpha(1).restart(); 
             }
             
@@ -308,7 +340,7 @@
                     }
                 }); 
                 updateMicrosoftPanel(yearCurrent, linksubset.length, acquired_this_year)
-                restart(nodesubset, linksubset, acquired_overall); 
+                restart(nodesubset, linksubset, acquired_overall, acquired_this_year); 
             }
 
 
@@ -318,8 +350,6 @@
                 const graphX = scaleX.invert(mouseX); 
                 const yearHover= Math.min(Math.max(Math.round(graphX), yearMin), yearMax);
                 popup.attr("opacity", 0);
-                // hoverLine.style("stroke-width", 1);
-                // hoverLineGroup.selectAll("text").style("font-weight", "normal");
                 updateHoverLine(yearHover)
             }
 
