@@ -267,12 +267,14 @@
 
                 });
 
-                setToolTips();
                 links.exit().remove();
                 simulation.nodes(nsubset);
                 simulation.force("link").links(lsubset).strength(0.2);
                 simulation.alpha(1).restart(); 
             }
+
+            
+
             
             let graphsvg = yearInput
                 .select("#graphsvg")
@@ -341,6 +343,7 @@
                 }); 
                 updateMicrosoftPanel(yearCurrent, linksubset.length, acquired_this_year)
                 restart(nodesubset, linksubset, acquired_overall, acquired_this_year); 
+                setToolTips();
             }
 
 

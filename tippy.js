@@ -2,7 +2,14 @@ function setToolTips(){
     n = svg.selectAll("g").filter(function(d){
         return d["Company"] != "Microsoft Corp";
     }); 
-    console.log(n);
+
+    //remove all previous instances of tippy
+    [...document.querySelectorAll('*')].forEach(node => {
+        if (node._tippy) {
+            node._tippy.destroy();
+        }
+    });
+
     n.attr("data-tippy-content", (d, i) => {
         if(d["Company"] != "Microsoft Corp"){
             let text =  "<b>" + d["Company"] + "</b>"; 
