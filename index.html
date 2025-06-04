@@ -298,7 +298,7 @@
                 .attr("y1", 0)
                 .attr("y2", graphHeight); 
             let hoverC1 = hoverLineGroup.append("circle").attr("r", 4)
-            let hoverC2 = hoverLineGroup.append("circle").attr("r", 4)
+            let hoverC2 = hoverLineGroup.append("circle").attr("r", 4).attr("fill", "#0459cc")
             let popup = graphsvg.append("text")
                     .text("<- Click and drag!")
                     .attr("y", graphYBottom - 5)
@@ -366,7 +366,7 @@
                     .join("text")
                     .call(text => text
                         .selectAll("tspan")
-                        .data([year, `Num acquired: ${acquired_data}`, `Num founded: ${founded_data}`])
+                        .data([year,`Num founded: ${founded_data}`, `Num acquired: ${acquired_data}`])
                         .join("tspan")
                         .attr("x", function(d, i) {
                             if(year < 2018){
