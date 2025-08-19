@@ -44,7 +44,7 @@
 }
 
 .microsoft_node text{
-    font-size: 20px;
+    font-size: 18px;
     z-index: 1;
     fill: var(--dark-blue);
 }
@@ -112,6 +112,10 @@
     color: var(--dark-blue);
 }
 
+.accent{
+    color: var(--orange);
+}
+
 .graph_svg {
     width: 100%;
     float: bottom;
@@ -133,12 +137,12 @@
 }
 
 h1{
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     margin: 1rem 0rem;
 }
 
 h2{
-    font-size: 2rem;
+    font-size: 1.4rem;
     font-weight: normal;
 }
 
@@ -160,7 +164,7 @@ h3{
 }
 
 p{
-    font-size: 1.5rem;
+    font-size: 1rem;
 }
 
 a{
@@ -172,8 +176,8 @@ a{
     stroke-width: 1px;
     border-style: solid;
     padding: 1rem;
-    height: 12rem;
-    font-size: 1.2rem;
+    height: 10rem;
+    font-size: 1rem;
     width:20rem;
 }
 
